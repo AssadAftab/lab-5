@@ -1,0 +1,20 @@
+print ('')
+print('Devices with bad software version')
+print('--------------------------')
+current_version = 'Version 5.3.1'
+
+
+file = open('devices-06.txt', 'r')
+for line in file:
+
+   device_info_list = line.strip().split(',')
+   device_info = {}
+   device_info ['name'] = device_info_list[0]
+   device_info ['ip'] = device_info_list[2]
+   device_info ['version'] = device_info_list[3]
+
+   if device_info['version'] != current_version:
+     print('Device:', device_info['name'], 
+     'version:', device_info['version'])
+
+print('')
