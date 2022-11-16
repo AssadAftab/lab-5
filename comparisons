@@ -1,20 +1,58 @@
-print ('')
-print('Devices with bad software version')
-print('--------------------------')
-current_version = 'Version 5.3.1'
+import netmiko
+import getpass
+import difflib
+
+variableOne = "startup-config"
+variableTwo = "running-config"
+
+ArrayOne = ['online-config']
+ArrayTwo = ['offline-config']
 
 
-file = open('devices-06.txt', 'r')
-for line in file:
+MenuInfo ={
+  'device_type':'',
+  'host':'192.168.56.101',
+  'username':'cisco',
+  'password':'cisco',
+  'secret':'class'
 
-   device_info_list = line.strip().split(',')
-   device_info = {}
-   device_info ['name'] = device_info_list[0]
-   device_info ['ip'] = device_info_list[2]
-   device_info ['version'] = device_info_list[3]
 
-   if device_info['version'] != current_version:
-     print('Device:', device_info['name'], 
-     'version:', device_info['version'])
+}
 
-print('')
+print('**device script**')
+MenuInfo["password"] = getpass.getpass("Enter device Password")
+MenuInfo["secret"] = getpass.getpass("Enter device Secret")
+MenuType = input("Do you want to connect to SSH (A) or Do you want to connect to Telnet (B)")
+if MenuType == "A":
+    MenuInfo["device_type"] = "cisco_ios"
+    session = netmiko.ConnectHandler(**MenuInfo)
+    session.enable()
+    print("session has been enabled")
+    commandOutput = session.send_command('show running-config')
+    file = open("config.txt", "w")
+    file.write(commandOutput)
+    file.close()
+    print ("File saved")
+elif MenuType == "B":
+    MenuInfo['device_type'] = 'cisco_ios_telnet'
+    session = netmiko.ConnectHandler(**MenuInfo)
+    session.enable()
+    print(session.send_command('sh ip int br'))
+else:
+  
+    exit()
+
+
+diffs = difflib.unified_diff(variableOne, variableTwo, n=0)
+diffs = difflib.ndiff(ArrayOne, ArrayTwo)
+
+for diff in diffs:
+    print(diff)
+
+with open('a.txt', 'r') as file1, open('b.txt','r') as file2:
+    diffs = difflib.ndiff(ArrayOne, file2.readlines())
+    for diff in diffs:
+        print(diff)
+
+
+
