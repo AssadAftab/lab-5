@@ -2,11 +2,7 @@ import netmiko
 import getpass
 import difflib
 
-variableOne = "startup-config"
-variableTwo = "running-config"
 
-ArrayOne = ['online-config']
-ArrayTwo = ['offline-config']
 
 
 MenuInfo ={
@@ -25,15 +21,16 @@ MenuInfo["secret"] = getpass.getpass("Enter device Secret")
 MenuType = input("Do you want to connect to SSH (A) or Do you want to connect to Telnet (B)")
 if MenuType == "A":
     MenuInfo["device_type"] = "cisco_ios"
-    session = netmiko.ConnectHandler(**MenuInfo)
-    session.enable()
-    print("session has been enabled")
-    commandOutput = session.send_command('show running-config')
-    file = open("config.txt", "w")
-    file.write(commandOutput)
-    file.close()
-    print ("File saved")
-elif MenuType == "B":
+session = netmiko.ConnectHandler(**MenuInfo)
+session.enable()
+print("session has been enabled")
+commandOutput = session.send_command('sh running-config')
+startupOutput = session.send_command('sh startup-config')
+file = open("config.txt", "w")
+file.write(commandOutput)
+file.close()
+print ("File saved")
+if MenuType == "B":
     MenuInfo['device_type'] = 'cisco_ios_telnet'
     session = netmiko.ConnectHandler(**MenuInfo)
     session.enable()
@@ -41,18 +38,28 @@ elif MenuType == "B":
 else:
   
     exit()
+backupfile = open("config.txt", "r")
+print(" The config is successful")
+
+choice = input("Please pick option 1 to compare against the current start config or choose 2 to compare against a local offline cofig.")
+if choice == "1":
+    for diff in difflib.context_diff(commandOutput.split("\n"), startupOutput.split("\n")):
+        print(diff)
 
 
-diffs = difflib.unified_diff(variableOne, variableTwo, n=0)
-diffs = difflib.ndiff(ArrayOne, ArrayTwo)
-
-for diff in diffs:
+for diff in difflib.context_diff(commandOutput.split("\n"), startupOutput.split("\n")):
     print(diff)
 
-with open('a.txt', 'r') as file1, open('b.txt','r') as file2:
-    diffs = difflib.ndiff(ArrayOne, file2.readlines())
-    for diff in diffs:
+for diff in difflib.context_diff(commandOutput.split("\n"), backupfile.readline()):
+
+    print(diff)
+
+if choice == "2":
+    backupfile = open("config.txt", "r")
+    for diff in difflib.context_diff(commandOutput.splt("\n"), backupfile.readline()):
         print(diff)
+
+
 
 
 
