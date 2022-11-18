@@ -1,7 +1,9 @@
-import netmiko
+import netmiko 
 import getpass
 import difflib
-
+#i have imported netmiko which is an SSH protocol
+#i have imported getpass as it prompts the user without echoing
+#i have also added difflib which allows the function of comparing my running and startup config.
 MenuInfo ={
   'device_type':'',
   'host':'192.168.56.101',
@@ -9,11 +11,15 @@ MenuInfo ={
   'password':'cisco123!',
   'secret':'class123!'
 }
+#This is my dictionary and my menuinfo
 
 print('**device script**')
 MenuInfo["password"] = getpass.getpass("Enter device Password")
 MenuInfo["secret"] = getpass.getpass("Enter device Secret")
+# This is to give intructions to the user to enter the password and secret password
 
+
+#This is where i have made an option setting for the user where they can choose wether choose either SSH or Telnet.
 MenuType = input("Do you want to connect to SSH (A) or Do you want to connect to Telnet (B)")
 if MenuType == "A":
     MenuInfo["device_type"] = "cisco_ios"
@@ -26,6 +32,7 @@ if MenuType == "A":
     file.write(commandOutput)
     file.close()
     print ("File saved")
+    #in order to create my comparison for show running config and a startup config`i used the session.send_command
 
     choice = input("Please pick option 1 to compare against the current start config or choose 2 to compare against a local offline cofig.")
     if choice == "1":
@@ -33,13 +40,15 @@ if MenuType == "A":
             print(diff)
     if choice == "2":
         backupfile = open("config.txt", "r")
-        for diff in difflib.context_diff(commandOutput.splt("\n"), backupfile.readlines()):
+        for diff in difflib.context_diff(commandOutput.split("\n"), backupfile.readlines()):
             print(diff)
-
-
+#i have inputted my diff commands here for both options 1 and 2 where i compared my running config and my startup config 
+#i have also put another if choice where i have compared my running config with my offline config
 elif MenuType == "B":
     MenuInfo['device_type'] = 'cisco_ios_telnet'
     session = netmiko.ConnectHandler(**MenuInfo)
     session.enable()
     print(session.send_command('sh ip int br'))
+else:
+    exit()
 
