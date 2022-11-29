@@ -49,6 +49,17 @@ elif MenuType == "B":
     session = netmiko.ConnectHandler(**MenuInfo)
     session.enable()
     print(session.send_command('sh ip int br'))
-else:
-    exit()
+    
+    
+    
+    choicelp = input("intf loopback,(1), result (2),RIP (3) ")
+    if choicelp == "1":
+        session.send_config_set("intf loopback 0", "ip address 10.10.1.0 255.255.255.255")
+    elif choicelp == "2":
+        output = session.send_config_set("show ip brief")
+        print(output)
 
+    elif choicelp == "3":
+        session.send_config_set("router rip", "network 10.10.1.1")
+        output=session.send_command("show ip route")
+        print (session.send_command)
