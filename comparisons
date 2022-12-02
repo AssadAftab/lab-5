@@ -42,6 +42,20 @@ if MenuType == "A":
         backupfile = open("config.txt", "r")
         for diff in difflib.context_diff(commandOutput.split("\n"), backupfile.readlines()):
             print(diff)
+
+    choicelp = input("int loopback,(1), outcome (2),router rip (3)?")
+    if choicelp == "1":
+        session.send_config_set("int loopback 0", "ip address 10.10.1.0 255.255.255.255")
+    elif choicelp == "2":
+        output = session.send_config_set("show ip int brief")
+        print(output)
+
+    elif choicelp == "3":
+        session.send_config_set("router rip", "network 10.10.1.1")
+        output=session.send_command("show ip route")
+        print (session.send_command)
+    
+    
 #i have inputted my diff commands here for both options 1 and 2 where i compared my running config and my startup config 
 #i have also put another if choice where i have compared my running config with my offline config
 elif MenuType == "B":
@@ -49,17 +63,3 @@ elif MenuType == "B":
     session = netmiko.ConnectHandler(**MenuInfo)
     session.enable()
     print(session.send_command('sh ip int br'))
-    
-    
-    
-    choicelp = input("intf loopback,(1), result (2),RIP (3) ")
-    if choicelp == "1":
-        session.send_config_set("intf loopback 0", "ip address 10.10.1.0 255.255.255.255")
-    elif choicelp == "2":
-        output = session.send_config_set("show ip brief")
-        print(output)
-
-    elif choicelp == "3":
-        session.send_config_set("router rip", "network 10.10.1.1")
-        output=session.send_command("show ip route")
-        print (session.send_command)
