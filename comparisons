@@ -42,7 +42,7 @@ if MenuType == "A":
         backupfile = open("config.txt", "r")
         for diff in difflib.context_diff(commandOutput.split("\n"), backupfile.readlines()):
             print(diff)
-
+#This is where i have implemented the loopback, result and router rip for part 3 of the assignment
     choicelp = input("int loopback,(1), outcome (2),router rip (3)?")
     if choicelp == "1":
         session.send_config_set("int loopback 0", "ip address 10.10.1.0 255.255.255.255")
